@@ -1,16 +1,13 @@
-from warnings import resetwarnings
-from bs4.element import SoupStrainer
 import requests
 import re
 from bs4 import BeautifulSoup
 
-KEY_WORD = 'python'
-URL = f'https://djinni.co/jobs/?keywords={KEY_WORD}'
+url = f'https://djinni.co/jobs/?keywords='
 
 
-def extract_max_page():
+def extract_max_page(keyword):
     request = requests.get(
-        f'{URL}&page=2')
+        f'{url}{keyword}&page=2')
 
     soup = BeautifulSoup(request.text, 'html.parser')
 
@@ -31,11 +28,11 @@ def extract_job(html):
     return {'title': title, 'company': company, 'location': location, 'link': link}
 
 
-def extract_jobs(last_page):
+def extract_jobs(last_page, keyword):
     jobs = []
     for page in range(last_page):
         print(f'Djinni: Парсинг страницы {page+1}')
-        req_result = requests.get(f'{URL}&page={page+1}')
+        req_result = requests.get(f'{url}{keyword}&page={page+1}')
         soup = BeautifulSoup(req_result.text, 'html.parser')
         job_result = soup.find_all('li', {'class': 'list-jobs__item'})
         for job_html in job_result:
@@ -44,7 +41,7 @@ def extract_jobs(last_page):
     return jobs
 
 
-def get_jobs():
-    max_page = extract_max_page()
-    jobs = extract_jobs(max_page)
+def get_jobs(keyword):
+    last_page = extract_max_page(keyword)
+    jobs = extract_jobs(last_page, keyword)
     return jobs

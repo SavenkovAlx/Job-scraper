@@ -2,7 +2,7 @@ import csv
 
 
 def save_to_csv(jobs):
-    with open('test.csv', 'w') as file:
+    with open('jobs.csv', 'w') as file:
         writer = csv.writer(file)
         writer.writerow(['title', 'company', 'location', 'link'])
         for job in jobs:

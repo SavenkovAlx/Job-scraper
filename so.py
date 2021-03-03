@@ -1,12 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
 
-KEY_WORD = 'python'
-URL = f'https://stackoverflow.com/jobs?q={KEY_WORD}'
+
+url = f'https://stackoverflow.com/jobs?q='
 
 
-def extract_max_page():
-    request = requests.get(URL)
+def extract_max_page(keyword):
+    request = requests.get(f'{url}{keyword}')
     soup = BeautifulSoup(request.text, 'html.parser')
     pages = soup.find('div', {'class': 's-pagination'}).find_all('a')
     pages = pages[-2]
@@ -24,12 +24,12 @@ def extract_job(html):
     return {'title': title, 'company': company, 'location': location, 'link': link}
 
 
-def extract_jobs(last_page):
+def extract_jobs(last_page, keyword):
     jobs = []
     for page in range(last_page):
         print(f'Stackoverflow: Парсинг страницы {page+1}')
         req_result = requests.get(
-            f'{URL}&pg={page+1}')
+            f'{url}{keyword}&pg={page+1}')
         soup = BeautifulSoup(req_result.text, 'html.parser')
         job_result = soup.find_all('div', {'class': 'grid--cell fl1'})
         for job_html in job_result:
@@ -38,7 +38,7 @@ def extract_jobs(last_page):
     return jobs
 
 
-def get_jobs():
-    max_page = extract_max_page()
-    jobs = extract_jobs(max_page)
+def get_jobs(keyword):
+    last_page = extract_max_page(keyword)
+    jobs = extract_jobs(last_page, keyword)
     return jobs
